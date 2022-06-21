@@ -1,0 +1,109 @@
+package First;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.testng.asserts.SoftAssert;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
+
+public class TestCase2 {
+    public static Properties loadData(String filePath) {
+        Properties prop = new Properties();
+        FileInputStream fileInput = null;
+
+        try {
+            File file = new File(filePath);
+            fileInput = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            prop.load(fileInput);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return prop;
+    }
+
+    public static String getEnv() {
+        try{
+            Properties prop = loadData(System.getProperty("user.dir")+ File.separator+"src/First/config.properties");
+            //String envURI = prop.getProperty(prop.getProperty("qa"));
+            //String envURI = prop.getProperty(prop.getProperty("staging"));
+            //String envURI = prop.getProperty(prop.getProperty("local"));
+            String envURI = prop.getProperty(prop.getProperty("prod"));
+            return ((envURI == null) ? "https://www.mytheresa.com/en-de/men.html" : envURI);
+        } catch(Exception e) {
+            return "https://www.mytheresa.com/en-de/men.html";
+        }
+    }
+
+
+    static WebDriver driver;
+    public static void setup(String browser) throws Exception{
+        if(browser.equalsIgnoreCase("firefox")){
+            System.setProperty("webdriver.gecko.driver", ".\\geckodriver.exe");
+            driver = new FirefoxDriver();
+        }
+        else if(browser.equalsIgnoreCase("chrome")){
+            System.setProperty("webdriver.chrome.driver","C:\\Users\\anupamar\\OneDrive - Conga\\Documents\\New Lappy\\Docs\\Software\\chromedriver_win32 (1)\\chromedriver.exe");
+            driver = new ChromeDriver();
+        }
+        else if(browser.equalsIgnoreCase("Edge")){
+            System.setProperty("webdriver.edge.driver",".\\MicrosoftWebDriver.exe");
+            driver = new EdgeDriver();
+        }
+        else{
+            throw new Exception("Browser is not correct");
+        }
+        Thread.sleep(3000);
+    }
+
+
+    public static void main(String[] args) throws Exception {
+
+        setup("chrome");
+
+        String env = getEnv();
+
+        driver.get(env);
+        driver.manage().window().maximize();
+        Thread.sleep(3000);
+
+        WebElement myAccount = driver.findElement(By.xpath("//a[@id='myaccount']"));
+        myAccount.click();
+
+        WebElement email = driver.findElement(By.xpath("//div[@id='qa-login-email']//input[@id='email']"));
+        email.click();
+        email.sendKeys("jhithyshi@maildrop.cc");
+
+        WebElement pwd = driver.findElement(By.xpath("//div[@id='qa-login-password']//input[@id='pass']"));
+        pwd.click();
+        pwd.sendKeys("Sanhith2020!");
+
+        WebElement login = driver.findElement(By.xpath("//div[@id='qa-login-button']//button[@id='send2']"));
+        login.click();
+        Thread.sleep(3000);
+
+        /*WebElement loginName = driver.findElement(By.xpath("//p[contains(@class,'welcome-msg')]"));
+        String loginNameString = loginName.getText();
+        System.out.println(loginNameString);
+        SoftAssert verify = new SoftAssert();
+        verify.assertTrue(loginNameString.contains("Hithyshi Jayaram"));*/
+
+        driver.close();
+
+    }
+
+
+}

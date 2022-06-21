@@ -1,0 +1,4 @@
+qa = https://test.mytheresa.com/en-de/men.html
+staging = https://staging.mytheresa.com/en-de/men.html
+local = https://local.mytheresa.com/en-de/men.html
+prod = https://www.mytheresa.com/en-de/men.html
